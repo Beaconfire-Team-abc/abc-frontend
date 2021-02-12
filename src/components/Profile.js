@@ -2,7 +2,7 @@ import React from 'react'
 
 const Profile = ({user}) => (
     <div>
-        <h2>profile section</h2>
+        <h2>Profile section</h2>
     </div>
 );
 
