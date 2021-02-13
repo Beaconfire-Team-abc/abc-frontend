@@ -1,24 +1,61 @@
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from 'react-bootstrap/Navbar'
+import Nav from 'react-bootstrap/Nav'
+import Container from 'react-bootstrap/Container'
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Switch,
+  Redirect,
+  useLocation
+} from 'react-router-dom';
+import Summary from './components/Summary';
+import Timesheet from './components/Timesheet';
+import Profile from './components/Profile';
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+      {/* <Navbar bg="light" variant="light">
+        <Navbar.Brand href="/">Home</Navbar.Brand>
+        <Nav className="mr-auto">
+              <Nav.Link href="/summary">Summary</Nav.Link>
+              <Nav.Link href="/timesheet">Timesheet</Nav.Link>
+              <Nav.Link href="/profile">Profile</Nav.Link>
+        </Nav>
+      </Navbar> */}
+
+        <Container>
+          <Nav variant="tabs">
+            <Nav.Item>
+              <Nav.Link href="/summary">Summary</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link href="/timesheet">Timesheet</Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link href="/profile">Profile</Nav.Link>
+            </Nav.Item>
+          </Nav>
+        </Container>
+
+        <Switch>
+          <Route exact path="/summary">
+            <Summary />
+          </Route>
+          <Route path="/timesheet">
+            <Timesheet />
+          </Route>
+          <Route path="/profile">
+            <Profile />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
