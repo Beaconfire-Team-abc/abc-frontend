@@ -1,9 +1,10 @@
 import React from 'react';
+import ProfileForm from './ProfileForm';
 
 function Profile (props) {
     return (
         <div>
-            <h2>Profile section</h2>
+            <ProfileForm ></ProfileForm> 
         </div>
     );
 }
