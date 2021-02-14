@@ -1,6 +1,5 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from 'react-bootstrap/Navbar'
 import Nav from 'react-bootstrap/Nav'
 import Container from 'react-bootstrap/Container'
 import {
@@ -20,15 +19,6 @@ function App() {
   return (
     <Router>
       <div>
-      {/* <Navbar bg="light" variant="light">
-        <Navbar.Brand href="/">Home</Navbar.Brand>
-        <Nav className="mr-auto">
-              <Nav.Link href="/summary">Summary</Nav.Link>
-              <Nav.Link href="/timesheet">Timesheet</Nav.Link>
-              <Nav.Link href="/profile">Profile</Nav.Link>
-        </Nav>
-      </Navbar> */}
-
         <Container>
           <Nav variant="tabs">
             <Nav.Item>
@@ -45,13 +35,19 @@ function App() {
 
         <Switch>
           <Route exact path="/summary">
-            <Summary />
+            <Container>
+              <Summary />
+            </Container>
           </Route>
           <Route path="/timesheet">
-            <Timesheet />
+            <Container>
+              <Timesheet />
+            </Container>
           </Route>
           <Route path="/profile">
-            <Profile />
+            <Container>
+              <Profile />
+            </Container>
           </Route>
         </Switch>
       </div>
