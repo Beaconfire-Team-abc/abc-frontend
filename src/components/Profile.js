@@ -4,8 +4,17 @@ import { connect } from 'react-redux';
 import { fetchProfile } from '../actions/index'
 
 class Profile extends React.Component {
+    state = {
+        isLoading: true
+    };
+
+    finishLoading = () => {
+        this.setState({isLoading: false});
+    };
+
     componentDidMount() {
         this.props.fetchProfile();
+        this.finishLoading();
     }
 
     // getProfile = () => {
@@ -13,8 +22,16 @@ class Profile extends React.Component {
     // };
 
     render() {
+        console.log(this.state.isLoading);
         console.log(this.props.profile.firstName);
-        return <div><ProfileForm name={this.props.profile.firstName}/> </div>;
+        return (
+            <div> 
+                {/* <div><ProfileForm profile={this.props.profile}/> </div> */}
+                {
+                    this.state.isLoading && <div> <p>yes</p> </div> 
+                }
+            </div>
+        );
     }
     // return (
     //     <div>
