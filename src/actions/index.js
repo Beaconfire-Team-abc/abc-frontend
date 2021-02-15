@@ -1,12 +1,25 @@
 import JsonPlaceHolder from "../apis/JsonPlaceHolder";
 
-export const fetchProfiles = () => async dispatch => {
+// todo: change the url later
+export const fetchAllTimesheets = () => async dispatch => {
     const response = await JsonPlaceHolder.get('/hr/profile/');
-    // console.log(response);
+    // console.log(response.data);
     if (response.data.serviceStatus.success) {
         dispatch({
-            type: 'FECTH_PROFILES',
-            payload: response.data.profileSummaryRequests
+            type: 'FECTH_ALL_TIMESHEETS',
+            payload: response.data.profileSummaryRequests 
+        }); 
+    }
+};
+
+// todo: change the url later
+export const fetchProfile = () => async dispatch => {
+    const response = await JsonPlaceHolder.get('/employee/profile/2');
+    // console.log(response.data);
+    if (response.data.serviceStatus.success) {
+        dispatch({
+            type: 'FECTH_PROFILE',
+            payload: response.data.person
         }); 
     }
 };

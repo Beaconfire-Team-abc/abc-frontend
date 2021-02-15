@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { fetchProfiles } from '../actions/index'
+import { fetchAllTimesheets } from '../actions/index'
 import Table from 'react-bootstrap/Table'
 
 class Summary extends React.Component {
     componentDidMount() {
-        this.props.fetchProfiles();
+        this.props.fetchAllTimesheets();
     }
 
-    renderProfileList() {
+    renderTimesheetList() {
         return (
             <Table striped bordered hover size="sm">
                 <thead>
@@ -20,13 +20,13 @@ class Summary extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    {this.props.profiles.map((profile, idx) => {
+                    {this.props.timesheets.map((timesheet, idx) => {
                         return ([
                             <tr key={idx}>
-                            <td>{profile.employeeId}</td>
-                            <td>{profile.firstName} </td>
-                            <td>{profile.ssn}</td>
-                            <td>{profile.startDate}</td>
+                            <td>{timesheet.employeeId}</td>
+                            <td>{timesheet.firstName} </td>
+                            <td>{timesheet.ssn}</td>
+                            <td>{timesheet.startDate}</td>
                             </tr>
                         ]);
                     })}
@@ -36,16 +36,16 @@ class Summary extends React.Component {
     }
 
     render() {
-        console.log(this.props.profiles);
-        return <div>{this.renderProfileList()}</div>;
+        console.log(this.props.timesheets);
+        return <div>{this.renderTimesheetList()}</div>;
     }
 }
 
 const mapStateToProps = (state) => {
-    return { profiles: state.profiles };
+    return { timesheets: state.timesheets };
 };
 
 export default connect(
     mapStateToProps, 
-    { fetchProfiles }
+    { fetchAllTimesheets }
 )(Summary);

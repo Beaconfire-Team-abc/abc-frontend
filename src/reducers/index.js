@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import profileReducer from './profileReducer';
+import timesheetReducer from './timesheetReducer';
 
 export default combineReducers({
-    profiles: profileReducer
+    profile: profileReducer,
+    timesheets: timesheetReducer
 });
