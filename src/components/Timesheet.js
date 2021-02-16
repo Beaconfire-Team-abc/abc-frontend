@@ -6,6 +6,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 function Timesheet (props) {
     const [startDate, setStartDate] = useState(new Date());
+
     const formatDate = str => {
         str = str.toString();
         let parts = str.split(" ");
@@ -25,7 +26,7 @@ function Timesheet (props) {
         };
         return parts[3] + "-" + months[parts[1]] + "-" + parts[2];
       };
-
+    
     return (
         <div>
             <div>Week Ending:  <DatePicker selected={startDate} onChange={date => setStartDate(date)} /></div>
