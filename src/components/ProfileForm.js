@@ -1,35 +1,36 @@
 import { useFormik } from 'formik';
+import { post } from 'jquery';
+import { connect } from 'react-redux';
 import * as Yup from "yup";
+import {postProfile} from "../actions/index"
 
-function ProfileForm(props) {
+function ProfileForm({profile, postProfile}) {
 
     const schema = Yup.object({
         name: Yup.string().required("Required"),
         phoneNumber: Yup.string().required("Required"),
         email: Yup.string().required("Required"),
         address: Yup.string().required("Required"),
-        contactName: Yup.string().required("Required"),
-        contactRelationship: Yup.string().required("Required")
+        contact1Name: Yup.string().required("Required"),
+        contact1Phone: Yup.string().required("Required"),
+        contact2Name: Yup.string().required("Required"),
+        contact2Phone: Yup.string().required("Required")
     });
     
     const formik = useFormik({
         initialValues: {
-            name: "",
-            phoneNumber: "",
-            email: "",
-            address: "",
-            contactName: "",
-            contactRelationship: ""
+            name: (profile.name === null)? "": profile.name,
+            phoneNumber: (profile.cellphone === null)? "": profile.cellphone,
+            email: (profile.email === null)? "": profile.email,
+            address: (profile.address === null)? "": profile.address,
+            contact1Name: (profile.emergencyContacts[0].name === null)? "": profile.emergencyContacts[0].name,
+            contact1Phone: (profile.emergencyContacts[0].phone === null)? "": profile.emergencyContacts[0].phone,
+            contact2Name: (profile.emergencyContacts[1].name === null)? "": profile.emergencyContacts[1].name,
+            contact2Phone: (profile.emergencyContacts[1].phone === null)? "": profile.emergencyContacts[1].phone,
         },
         validationSchema: schema,
         onSubmit: (values) => {
-            console.log(JSON.stringify(values));
-            // props.addNewTask(values);
-            // formik.resetForm({
-            //     task: "",
-            //     dayTime: "",
-            //     reminder: false
-            // });
+            postProfile(values);
         }
     });
 
@@ -41,7 +42,7 @@ function ProfileForm(props) {
                     className="form-control" 
                     type="text" 
                     name="name" 
-                    placeholder="Enter Name" 
+                    placeholder="First Name, Last Name" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.name}
@@ -55,7 +56,7 @@ function ProfileForm(props) {
                     className="form-control" 
                     type="text" 
                     name="phoneNumber" 
-                    placeholder="Enter Phone Number" 
+                    placeholder="(917)328-7765" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.phoneNumber}
@@ -69,7 +70,7 @@ function ProfileForm(props) {
                     className="form-control" 
                     type="text" 
                     name="email" 
-                    placeholder="Enter Email" 
+                    placeholder="Email@gmail.com" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.email}
@@ -83,7 +84,7 @@ function ProfileForm(props) {
                     className="form-control" 
                     type="text" 
                     name="address" 
-                    placeholder="Enter Address" 
+                    placeholder="(Home Address)81 Shelley Cir, East Windsor, NJ 08520" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                     value={formik.values.address}
@@ -92,34 +93,65 @@ function ProfileForm(props) {
             </div>
 
             <br></br>
-            <h5>Emergency Contact</h5>
+            <h5>Emergency Contact 1</h5>
 
             <div className="form-group">
                 <label>Name</label>
                 <input 
                     className="form-control" 
                     type="text" 
-                    name="contactName" 
-                    placeholder="Enter Name" 
+                    name="contact1Name" 
+                    placeholder="First Name, Last Name" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.contactName}
+                    value={formik.values.contact1Name}
                 />
-                {formik.touched.contactName && formik.errors.contactName ? <div style={{color: 'red'}}>{formik.errors.contactName}</div>: null}
+                {formik.touched.contact1Name && formik.errors.contact1Name ? <div style={{color: 'red'}}>{formik.errors.contact1Name}</div>: null}
             </div>
 
             <div className="form-group">
-                <label>Relationship</label>
+                <label>Cellphone</label>
                 <input 
                     className="form-control" 
                     type="text" 
-                    name="contactRelationship" 
-                    placeholder="Enter Relationship" 
+                    name="contact1Phone" 
+                    placeholder="(917)328-7765" 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={formik.values.contactRelationship}
+                    value={formik.values.contact1Phone}
                 />
-                {formik.touched.contactRelationship && formik.errors.contactRelationship ? <div style={{color: 'red'}}>{formik.errors.contactRelationship}</div>: null}
+                {formik.touched.contact1Phone && formik.errors.contact1Phone ? <div style={{color: 'red'}}>{formik.errors.contact1Phone}</div>: null}
+            </div>
+
+            <br></br>
+            <h5>Emergency Contact 2</h5>
+
+            <div className="form-group">
+                <label>Name</label>
+                <input 
+                    className="form-control" 
+                    type="text" 
+                    name="contact2Name" 
+                    placeholder="First Name, Last Name" 
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.contact2Name}
+                />
+                {formik.touched.contact2Name && formik.errors.contact2Name ? <div style={{color: 'red'}}>{formik.errors.contact2Name}</div>: null}
+            </div>
+
+            <div className="form-group">
+                <label>Cellphone</label>
+                <input 
+                    className="form-control" 
+                    type="text" 
+                    name="contact2Phone" 
+                    placeholder="(917)328-7765" 
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.contact2Phone}
+                />
+                {formik.touched.contact2Phone && formik.errors.contact2Phone ? <div style={{color: 'red'}}>{formik.errors.contact2Phone}</div>: null}
             </div>
         
             <button type="submit" className="btn btn-dark btn-block">Save Profile</button>
@@ -127,4 +159,12 @@ function ProfileForm(props) {
     );
 }
 
-export default ProfileForm;
+const mapStateToProps = (state) => {
+    return 
+};
+
+const mapDispatchToProps = dispatch => ({
+    postProfile: data => dispatch(postProfile(data))
+})
+
+export default connect( null ,mapDispatchToProps )(ProfileForm);

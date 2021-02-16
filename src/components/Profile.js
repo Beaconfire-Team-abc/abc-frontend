@@ -3,6 +3,7 @@ import ProfileForm from './ProfileForm';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../actions/index'
 
+
 class Profile extends React.Component {
     state = {
         isLoading: true
@@ -17,31 +18,25 @@ class Profile extends React.Component {
         this.finishLoading();
     }
 
-    // getProfile = () => {
-    //     this.props.fetchProfile();
-    // };
-
     render() {
-        console.log(this.state.isLoading);
-        console.log(this.props.profile.firstName);
-        return (
-            <div> 
-                {/* <div><ProfileForm profile={this.props.profile}/> </div> */}
-                {
-                    this.state.isLoading && <div> <p>yes</p> </div> 
-                }
-            </div>
-        );
+
+        const profileContext = <div><ProfileForm profile={this.props.profile}/> </div>;
+        const isLoadingMessage = (<div className="d-flex align-items-center">
+                                    <strong>Loading...</strong>
+                                    <div className="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                                  </div>);
+        
+        return this.props.isLoading? isLoadingMessage : profileContext;
+
     }
-    // return (
-    //     <div>
-    //         <ProfileForm ></ProfileForm> 
-    //     </div>
-    // );
+
 }
 
 const mapStateToProps = (state) => {
-    return { profile: state.profile };
+    return { 
+        profile: state.profile,
+        isLoading: state.profileIsLoading,
+     };
 };
 
 export default connect(
