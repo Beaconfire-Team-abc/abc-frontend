@@ -157,6 +157,7 @@ export default class TimesheetBoard extends React.Component {
                                         </td>
                                         <td>
                                         <select value={day.totalHours} onChange={(e) => this.handleTotalHoursChange(e, idx)}>
+                                            <option value="6">0</option>
                                             <option value="6">6</option>
                                             <option value="7">7</option>
                                             <option value="8">8</option>
