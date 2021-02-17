@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import * as Yup from "yup";
 import {postProfile} from "../actions/index"
 
-function ProfileForm({profile, postProfile}) {
+function ProfileForm({profile, postProfile, userId}) {
 
     const schema = Yup.object({
         name: Yup.string().required("Required"),
@@ -30,7 +30,7 @@ function ProfileForm({profile, postProfile}) {
         },
         validationSchema: schema,
         onSubmit: (values) => {
-            postProfile(values);
+            postProfile(values, userId);
         }
     });
 
@@ -159,12 +159,9 @@ function ProfileForm({profile, postProfile}) {
     );
 }
 
-const mapStateToProps = (state) => {
-    return 
-};
 
 const mapDispatchToProps = dispatch => ({
-    postProfile: data => dispatch(postProfile(data))
+    postProfile: (data, userId) => dispatch(postProfile(data, userId))
 })
 
 export default connect( null ,mapDispatchToProps )(ProfileForm);

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React from 'react';
-import Table from 'react-bootstrap/Table'
+import Table from 'react-bootstrap/Table';
+import { Tooltip } from '@material-ui/core';
 
 export default class TimesheetBoard extends React.Component {
     constructor() {
@@ -9,15 +10,15 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06') {
-            console.log("loading data");
-            this.loadData();
-        }
+       
+        this.loadData();
+        
     }
 
     loadData() {
-        axios.get('/api/timesheet/1/weekending?weekending='+this.props.weekending)
+        axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend='+this.props.weekending)
             .then(response => {
+                console.log(response.data);
                 this.setState({
                     timesheet: response.data
                 });
@@ -28,10 +29,11 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        // If it's a new weekending, load data again
-        if (this.props.weekending !== prevProps.weekending && (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06')){
+        ///If it's a new weekending, load data again
+        if (this.props.weekending !== prevProps.weekending){
             this.loadData();
         }
+        
       }
 
     handleStartTimeChange(event, idx) {
@@ -54,6 +56,7 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet); 
             timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.totalBillingHour, timesheet.days[idx].totalHours, event.target.value); 
+            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.days[idx].totalHours = event.target.value;   
             return { timesheet };  
           })
@@ -66,6 +69,10 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isFloatingDay = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
+            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfFloatingDays = timesheet.numOfFloatingDays + (value? 1: -1);
             return { timesheet };                                 
           })
@@ -78,6 +85,10 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isVacationDay = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
+            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfVacationDays = timesheet.numOfVacationDays + (value? 1: -1);
             return { timesheet };                                 
           })
@@ -90,6 +101,10 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isHoliday = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
+            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfHolidays = timesheet.numOfHolidays + (value? 1: -1);
             return { timesheet };                                 
           })
@@ -99,27 +114,83 @@ export default class TimesheetBoard extends React.Component {
         return parseInt(totalBillingHours) + parseInt(newHour) - parseInt(oldHour);
     }
 
+    computeTotalCompensatedHours(days){
+        var totalCompensatedHour = 0;
+        for(let i = 0; i < days.length; i++){
+            if(days[i].isFloatingDay || days[i].isHoliday || days[i].isVacationDay){
+                totalCompensatedHour = totalCompensatedHour + 8;
+            };
+        }
+        return totalCompensatedHour;
+    }
+
     handleSubmit = event => {
+        if(document.getElementById("submissionStatus").value === "Approved Timesheet"){
+            this.setState(prevState => {
+                let timesheet = Object.assign({}, prevState.timesheet);  
+                timesheet.submissionStatus = "complete";
+                return { timesheet };                                 
+              })
+        }
+        else{
+            this.setState(prevState => {
+                let timesheet = Object.assign({}, prevState.timesheet);  
+                timesheet.submissionStatus = "incomplete";
+                return { timesheet };                                 
+              })
+        }
+
         event.preventDefault();
-        axios.post('/api/timesheet/save', this.state.timesheet)
+        axios.post('/api/employee/timesheet/save', this.state.timesheet)
           .then(res => {
-            console.log(res);
+            console.log(res.status);
           })
-      }
+    }
+
+    onClickSetDefault = event => {
+        event.preventDefault();
+        axios.post('/api/employee/timesheet/defaulttimesheet/save', this.state.timesheet)
+        .then(res => {
+        console.log(res);
+        });
+        alert("Set To Default");
+    }
+
+    
 
     render() {
-        console.log(this.props.userId);
-        // console.log(this.state.timesheet);
+   
+        
+        const hoursOptions = [];
+        for(let i = 0; i < 25; i++){
+            hoursOptions.push(<option key = {i} value={i}>{i}</option>)
+        }
+        const timeOptions = [];
+        timeOptions.push(<option key = 'N/A' value= 'N/A' >N/A</option>)
+        for(let j = 0; j < 12; j++){
+            const time = j + ":00 AM.";
+            timeOptions.push(<option key={time} value= {time} >{time}</option>)
+        }
+        for(let j = 0; j < 12; j++){
+            const time = j + ":00 PM.";
+            timeOptions.push(<option key={time} value= {time} >{time}</option>)
+        }
+
         return (
             <div>
                 {
                     this.state.timesheet ?
-                    <div>
-                        <p>Weekending Day: {this.props.weekending}</p>
-                        <p>Total Billing Hours: {this.state.timesheet.totalBillingHour}</p>
-                        <p>Total Compensated Hours: {this.state.timesheet.totalCompensatedHour}</p>
-
-                        <form onSubmit={this.handleSubmit}>
+                    <div>        
+                     <form>
+                        <div className="row">
+                            <strong className="col-sm">Weekending Day: {this.state.timesheet.weekending}</strong>
+                            <strong className="col-sm">Total Billing Hours: {this.state.timesheet.totalBillingHour}</strong>
+                            <strong className="col-sm">Total Compensated Hours: {this.state.timesheet.totalCompensatedHour}</strong>
+                            <input type="submit" value="Set Default" onClick={this.onClickSetDefault}/>
+                            <Tooltip title = "Save daily hours as default; future weekly timesheet will show same hours." arrow>
+                                    <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {30}/>
+                            </Tooltip>
+                        </div>
                         <Table striped bordered hover size="sm">
                             <thead>
                                 <tr>
@@ -141,27 +212,17 @@ export default class TimesheetBoard extends React.Component {
                                         <td>{day.date} </td>
                                         <td>
                                         <select value={day.startTime} onChange={(e) => this.handleStartTimeChange(e, idx)}>
-                                            <option value="8:00 A.M.">8:00 A.M.</option>
-                                            <option value="9:00 A.M.">9:00 A.M.</option>
-                                            <option value="10:00 A.M.">10:00 A.M.</option>
-                                            <option value="11:00 A.M.">11:00 A.M.</option>
+                                            {timeOptions}
                                         </select>
                                         </td>
                                         <td>
                                         <select value={day.endTime} onChange={(e) => this.handleEndTimeChange(e, idx)}>
-                                            <option value="4:00 P.M.">4:00 P.M.</option>
-                                            <option value="5:00 P.M.">5:00 P.M.</option>
-                                            <option value="6:00 P.M.">6:00 P.M.</option>
-                                            <option value="7:00 P.M.">7:00 P.M.</option>
+                                            {timeOptions}
                                         </select>
                                         </td>
                                         <td>
                                         <select value={day.totalHours} onChange={(e) => this.handleTotalHoursChange(e, idx)}>
-                                            <option value="6">0</option>
-                                            <option value="6">6</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
+                                            {hoursOptions}
                                         </select>
                                         </td>
                                         <td>
@@ -188,7 +249,19 @@ export default class TimesheetBoard extends React.Component {
                             </tbody>
                         </Table>
 
-                        <input type="submit" value="Save" />
+                        <div className="row">
+                            <div className="col-sm">
+                                <select  id="submissionStatus">
+                                    <option value="Approved Timesheet">Approved Timesheet</option>
+                                    <option value="UnApproved Timesheet">UnApproved Timesheet</option>
+                                </select>
+                            </div>
+                            <div className="col-sm">
+                                <input type="submit" value="Save" onClick={this.handleSubmit}/>
+                            </div>                   
+                        </div>
+
+                       
                         </form>
                     </div>
                     : null
