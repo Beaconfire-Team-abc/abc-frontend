@@ -10,14 +10,15 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidMount() {
-        if (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06') {
-            this.loadData();
-        }
+       
+        this.loadData();
+        
     }
 
     loadData() {
         axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend='+this.props.weekending)
             .then(response => {
+                console.log(response.data);
                 this.setState({
                     timesheet: response.data
                 });
@@ -29,7 +30,7 @@ export default class TimesheetBoard extends React.Component {
 
     componentDidUpdate(prevProps) {
         ///If it's a new weekending, load data again
-        if (this.props.weekending !== prevProps.weekending && (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06')){
+        if (this.props.weekending !== prevProps.weekending){
             this.loadData();
         }
         
@@ -138,10 +139,11 @@ export default class TimesheetBoard extends React.Component {
                 return { timesheet };                                 
               })
         }
+
         event.preventDefault();
         axios.post('/api/employee/timesheet/save', this.state.timesheet)
           .then(res => {
-            console.log(res);
+            console.log(res.status);
           })
     }
 
@@ -181,7 +183,7 @@ export default class TimesheetBoard extends React.Component {
                     <div>        
                      <form>
                         <div className="row">
-                            <strong className="col-sm">Weekending Day: {this.props.weekending}</strong>
+                            <strong className="col-sm">Weekending Day: {this.state.timesheet.weekending}</strong>
                             <strong className="col-sm">Total Billing Hours: {this.state.timesheet.totalBillingHour}</strong>
                             <strong className="col-sm">Total Compensated Hours: {this.state.timesheet.totalCompensatedHour}</strong>
                             <input type="submit" value="Set Default" onClick={this.onClickSetDefault}/>
@@ -256,10 +258,7 @@ export default class TimesheetBoard extends React.Component {
                             </div>
                             <div className="col-sm">
                                 <input type="submit" value="Save" onClick={this.handleSubmit}/>
-                            </div>
-                            
-
-                            
+                            </div>                   
                         </div>
 
                        
