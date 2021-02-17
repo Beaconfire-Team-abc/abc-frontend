@@ -30,7 +30,6 @@ function App() {
     } else {
       setisAutheticated(false);
     }
-    console.log("loggedInUser:" + isAutheticated)
   }
 
   useEffect(checkAuthetication, [])
@@ -47,7 +46,6 @@ function App() {
   function getUserId() {
     axios.get('/api2/auth/userid')
         .then(response => {
-          console.log(response.data);
           setUserId(response.data);
         })
         .catch((error) => {

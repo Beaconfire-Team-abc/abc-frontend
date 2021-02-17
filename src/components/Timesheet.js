@@ -7,7 +7,7 @@ import { useParams } from "react-router-dom";
 
 function Timesheet (props) {
     let { weekending } = useParams();
-    console.log(weekending)
+    // console.log(weekending)
     const [startDate, setStartDate] = useState(new Date());
 
     const formatDate = str => {

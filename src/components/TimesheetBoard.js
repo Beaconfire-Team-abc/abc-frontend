@@ -18,7 +18,7 @@ export default class TimesheetBoard extends React.Component {
     loadData() {
         axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend='+this.props.weekending)
             .then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 this.setState({
                     timesheet: response.data
                 });
@@ -128,14 +128,14 @@ export default class TimesheetBoard extends React.Component {
         if(document.getElementById("submissionStatus").value === "Approved Timesheet"){
             this.setState(prevState => {
                 let timesheet = Object.assign({}, prevState.timesheet);  
-                timesheet.submissionStatus = "complete";
+                timesheet.submissionStatus = "Complete";
                 return { timesheet };                                 
               })
         }
         else{
             this.setState(prevState => {
                 let timesheet = Object.assign({}, prevState.timesheet);  
-                timesheet.submissionStatus = "incomplete";
+                timesheet.submissionStatus = "Incomplete";
                 return { timesheet };                                 
               })
         }
@@ -145,6 +145,7 @@ export default class TimesheetBoard extends React.Component {
           .then(res => {
             console.log(res.status);
           })
+        alert("Timesheet Saved");
     }
 
     onClickSetDefault = event => {
@@ -168,11 +169,11 @@ export default class TimesheetBoard extends React.Component {
         const timeOptions = [];
         timeOptions.push(<option key = 'N/A' value= 'N/A' >N/A</option>)
         for(let j = 0; j < 12; j++){
-            const time = j + ":00 AM.";
+            const time = j + ":00 A.M.";
             timeOptions.push(<option key={time} value= {time} >{time}</option>)
         }
         for(let j = 0; j < 12; j++){
-            const time = j + ":00 PM.";
+            const time = j + ":00 P.M.";
             timeOptions.push(<option key={time} value= {time} >{time}</option>)
         }
 

@@ -1,13 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { fetchAllTimesheets } from '../actions/index'
-import Table from 'react-bootstrap/Table'
 import { withRouter } from "react-router-dom";
 import { useHistory } from 'react-router-dom';
 import { fetchProfile } from '../actions/index'
 import Timesheet from './Timesheet';
 import { Tooltip } from '@material-ui/core';
-import { Button } from 'bootstrap';
+import { Container, Button, Table } from 'react-bootstrap';
 import {
     BrowserRouter as Router,
     Switch,
@@ -27,13 +26,11 @@ class Summary extends React.Component {
       }
 
     componentDidMount() {
-        console.log(this.props.userId)
         this.props.fetchAllTimesheets(this.props.userId);
         this.props.fetchProfile(this.props.userId);
     }
 
     optioncondition(status){
-        console.log(status);
         if(status == "Approved"){
             return "View";
         }
@@ -45,7 +42,6 @@ class Summary extends React.Component {
    
 
     commentcondition(numOfFloatingDays, numOfVacationDays, numOfHolidays){
-        // console.log(numOfFloatingDays, numOfVacationDays, numOfHolidays);
         let res = "";
         if(numOfFloatingDays == 1)
             res += "1 floating day required";
@@ -182,16 +178,17 @@ class Summary extends React.Component {
                     })}
                 </tbody>
             </Table>
-            
         );
     }
 
     render() {
-        console.log(this.props.timesheets);
-        console.log(this.props.profile);
-        return <div>{this.renderTimesheetList()}
-                    <button onClick = {this.ShowMore}>Show More</button>
-                </div>;
+        return (
+            <div>
+                <Container>
+                    {this.renderTimesheetList()}
+                    <Button variant="info" onClick = {this.ShowMore}>Show More</Button>
+                </Container>
+            </div>);
     }
 
 }
