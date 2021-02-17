@@ -3,8 +3,11 @@ import DatePicker from "react-datepicker";
 import TimesheetBoard from './TimesheetBoard';
 import "react-datepicker/dist/react-datepicker.css";
 import { Container } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 
 function Timesheet (props) {
+    let { weekending } = useParams();
+    console.log(weekending)
     const [startDate, setStartDate] = useState(new Date());
 
     const formatDate = str => {
