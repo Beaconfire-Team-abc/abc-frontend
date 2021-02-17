@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import { fetchProfile } from '../actions/index'
 import Timesheet from './Timesheet';
 import { Tooltip } from '@material-ui/core';
+import { Button } from 'bootstrap';
 
 
 
@@ -15,8 +16,9 @@ class Summary extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          isShown: false
+          range: 1
         };
+        this.ShowMore = this.ShowMore.bind(this)
       }
 
     componentDidMount() {
@@ -44,33 +46,76 @@ class Summary extends React.Component {
         else if(numOfFloatingDays > 1)
             res += numOfFloatingDays + " floating days required";
         
-        if(res.length > 0){
-            res +=", "
-        }
+        
 
-        if(numOfVacationDays == 1)
+        if(numOfVacationDays == 1){
+            
             res += "1 vacation day required";
-        else if(numOfVacationDays > 1)
-            res += numOfVacationDays + " vacation days required";
-
-        if(res.length > 0){
-            res +=", "
         }
+        
+        else if(numOfVacationDays > 1){
+            if(res.length > 0){
+                res +=", "
+            }
+            res += numOfVacationDays + " vacation days required";
+        }
+            
 
-        if(numOfHolidays == 1)
+
+        if(numOfHolidays == 1){
+            
             res += "1 holiday day was included";
-        else if(numOfHolidays > 1)
+        }
+            
+        else if(numOfHolidays > 1){
+            if(res.length > 0){
+                res +=", "
+            }
             res += numOfHolidays + " vacation days were included";
+        }
+            
         
         return res
         
     }
     
+    ShowMore(){
+        this.setState((state) => {
+            // Important: read `state` instead of `this.state` when updating.
+            return {range: state.range + 1}
+          });
+    }
+
+    SubmissionTag(timesheet){
+        if(!timesheet.isFileApproved){
+            return "Items due: Proof of Approved TimeSheet"
+        }
+        else if(!timesheet.approvalStatus){
+            return "Approval denied by Admin, please contact your HR manager"
+        }
+    }
+
+    CommentTag(timesheet){
+        let year = timesheet.weekending.substring(0,4);
+        let res = ""
+        let floatingdays = this.props.profile.remainDays.remainingFloadingDays - timesheet.numOfFloatingDays;
+        let vacationdays = this.props.profile.remainDays.remainingVacationDays - timesheet.numOfVacationDays;
+        if(timesheet.numOfFloatingDays > 0){
+            res+= "Total floating days left in " + year + " : " + floatingdays + " days"
     
+        }
+        
+        if(timesheet.numOfVacationDays > 0){
+            if(res.length > 0){
+                res += ", "
+            }
+            res += "Total vacation days left in " + year + " : " + vacationdays + " days"
+        }
+        return res
+
+    }
 
     renderTimesheetList() {
-        
-        
         
         return (
             <Table striped bordered hover size="sm">
@@ -86,43 +131,56 @@ class Summary extends React.Component {
                 </thead>
                 <tbody>
                     {this.props.timesheets.map((timesheet, idx) => {
-                        return ([
-                            <tr key={idx}>
-                            <td>{timesheet.weekending}</td>
-                            <td>{timesheet.totalBillingHour} </td>
-                            <td>{timesheet.submissionStatus}&nbsp;&nbsp;&nbsp;
-                                <Tooltip title = "tip" arrow>
-                                <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
-                                </Tooltip>
+                        if(idx < this.state.range)
+                            return (    
+                                [
+                                <tr key={idx}>
+                                <td>{timesheet.weekending}</td>
+                                <td>{timesheet.totalBillingHour} </td>
+                                <td>{timesheet.submissionStatus}&nbsp;&nbsp;&nbsp;
+                                {
+                                    (timesheet.submissionStatus == "Not Started" || (timesheet.approvalStatus == "Approved" && timesheet.isFileApproved ))? null:
+                                    <Tooltip title = {this.SubmissionTag(timesheet)} arrow>
+                                    <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
+                                    </Tooltip>
+                                }
+                                   
+                                    </td>
+                                <td>{timesheet.approvalStatus}</td>
+                                <td>
+                                <button>{this.optioncondition(timesheet.approvalStatus)}</button>
                                 </td>
-                            <td>{timesheet.approvalStatus}</td>
-                            <td>
-                            <button>{this.optioncondition(timesheet.approvalStatus)}</button>
-                            </td>
-                            <td>{this.commentcondition(timesheet.numOfFloatingDays, timesheet.numOfVacationDays, timesheet.numOfHolidays)}
-                            &nbsp;&nbsp;&nbsp;{
-                                (timesheet.numOfFloatingDays > 0 || timesheet.numOfVacationDays > 0)? 
-                                <Tooltip title = "tip" arrow>
-                                <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
-                                </Tooltip>: null
-                            }
-            
-                            </td>
-                            </tr>
-                        ]);
+                                <td>{this.commentcondition(timesheet.numOfFloatingDays, timesheet.numOfVacationDays, timesheet.numOfHolidays)}
+                                &nbsp;&nbsp;&nbsp;{
+                                    (timesheet.numOfFloatingDays > 0 || timesheet.numOfVacationDays > 0)? 
+                                    <Tooltip title = {this.CommentTag(timesheet)} arrow>
+                                    <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
+                                    </Tooltip>: null
+                                }
+                
+                                </td>
+                                </tr>
+                            ]);
+                        else
+                            return null;
                     })}
                 </tbody>
             </Table>
+            
         );
     }
 
     render() {
-        
         console.log(this.props.timesheets);
         console.log(this.props.profile);
-        return <div>{this.renderTimesheetList()}</div>;
+        return <div>{this.renderTimesheetList()}
+                    <button onClick = {this.ShowMore}>Show More</button>
+                </div>;
     }
+
 }
+
+
 
 const mapStateToProps = (state) => {
     return { timesheets: state.timesheets ,
