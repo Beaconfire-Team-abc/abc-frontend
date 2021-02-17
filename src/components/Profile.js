@@ -15,8 +15,7 @@ class Profile extends React.Component {
     };
 
     componentDidMount() {
-        console.log(this.props.userId);
-        this.props.fetchProfile();
+        this.props.fetchProfile(this.props.userId);
         this.finishLoading();
     }
 
@@ -31,7 +30,7 @@ class Profile extends React.Component {
                                 <strong>Loading...</strong>
                                 <div className="spinner-border ml-auto" role="status" aria-hidden="true"></div>
                             </div>
-                            :<div><ProfileForm profile={this.props.profile}/> </div>
+                            :<div><ProfileForm profile={this.props.profile} userId={this.props.userId}/> </div>
                         }
                     </div>
                 </Container>
