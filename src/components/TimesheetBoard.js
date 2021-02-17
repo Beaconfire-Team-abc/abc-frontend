@@ -108,7 +108,7 @@ export default class TimesheetBoard extends React.Component {
       }
 
     render() {
-        // console.log(this.props.weekending);
+        console.log(this.props.userId);
         // console.log(this.state.timesheet);
         return (
             <div>

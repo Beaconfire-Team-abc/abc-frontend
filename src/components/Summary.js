@@ -8,7 +8,12 @@ import { fetchProfile } from '../actions/index'
 import Timesheet from './Timesheet';
 import { Tooltip } from '@material-ui/core';
 import { Button } from 'bootstrap';
-
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+  } from "react-router-dom";
 
 
 class Summary extends React.Component {
@@ -22,6 +27,7 @@ class Summary extends React.Component {
       }
 
     componentDidMount() {
+        console.log(this.props.userId)
         this.props.fetchAllTimesheets();
         this.props.fetchProfile();
     }
@@ -158,7 +164,7 @@ class Summary extends React.Component {
                                     </td>
                                 <td>{timesheet.approvalStatus}</td>
                                 <td>
-                                <button>{this.optioncondition(timesheet.approvalStatus)}</button>
+                                    <Link to={"/timesheet/" + timesheet.weekending}>{this.optioncondition(timesheet.approvalStatus)}</Link>
                                 </td>
                                 <td>{this.commentcondition(timesheet.numOfFloatingDays, timesheet.numOfVacationDays, timesheet.numOfHolidays)}
                                 &nbsp;&nbsp;&nbsp;{

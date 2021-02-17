@@ -11,4 +11,14 @@ module.exports = function(app) {
       }
     })
   );
+  app.use(
+    '/api2',
+    createProxyMiddleware({
+      target: 'http://localhost:9999',
+      "secure": false,
+      "pathRewrite": {
+        "^/api2": ""
+      }
+    })
+  );
 };
