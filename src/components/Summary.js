@@ -49,7 +49,9 @@ class Summary extends React.Component {
         
 
         if(numOfVacationDays == 1){
-            
+            if(res.length > 0){
+                res +=", "
+            }
             res += "1 vacation day required";
         }
         
@@ -63,7 +65,9 @@ class Summary extends React.Component {
 
 
         if(numOfHolidays == 1){
-            
+            if(res.length > 0){
+                res +=", "
+            }
             res += "1 holiday day was included";
         }
             
