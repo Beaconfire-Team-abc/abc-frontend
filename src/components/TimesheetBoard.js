@@ -10,15 +10,17 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidMount() {
-       
-        this.loadData();
-        
+        console.log(this.props.weekendingParam);
+        if (typeof this.props.weekendingParam !== 'undefined') {
+            this.loadData(this.props.weekendingParam);
+        } else {
+            this.loadData(this.props.weekending);
+        }
     }
 
-    loadData() {
-        axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend='+this.props.weekending)
+    loadData(weekend) {
+        axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend=' + weekend)
             .then(response => {
-                // console.log(response.data);
                 this.setState({
                     timesheet: response.data
                 });
@@ -29,11 +31,10 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        ///If it's a new weekending, load data again
+        // If it's a new weekending, load data again
         if (this.props.weekending !== prevProps.weekending){
-            this.loadData();
+            this.loadData(this.props.weekending);
         }
-        
       }
 
     handleStartTimeChange(event, idx) {
