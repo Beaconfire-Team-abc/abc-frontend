@@ -36,8 +36,9 @@ class Summary extends React.Component {
     }
 
     render() {
-        console.log(this.props.timesheets);
-        return <div>{this.renderTimesheetList()}</div>;
+        console.log(this.props.userId);
+        return <div>ok</div>;
+        // return <div>{this.renderTimesheetList()}</div>;
     }
 }
 
