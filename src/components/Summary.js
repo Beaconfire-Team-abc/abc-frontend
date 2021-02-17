@@ -28,7 +28,7 @@ class Summary extends React.Component {
 
     componentDidMount() {
         console.log(this.props.userId)
-        this.props.fetchAllTimesheets();
+        this.props.fetchAllTimesheets(this.props.userId);
         this.props.fetchProfile();
     }
 
@@ -206,6 +206,7 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps, 
-    { fetchAllTimesheets, fetchProfile }
+    {fetchAllTimesheets,
+        fetchProfile}
     
 )(Summary);

@@ -1,9 +1,8 @@
 import JsonPlaceHolder from "../apis/JsonPlaceHolder";
-
 // todo: change the url later
 export const fetchAllTimesheets = () => async dispatch => {
+    // console.log(userid)
     const response = await JsonPlaceHolder.get('/timesheet/1');
-    
     dispatch({
         type: 'FECTH_ALL_TIMESHEETS',
         payload: response.data 
