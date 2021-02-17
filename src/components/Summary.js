@@ -91,10 +91,10 @@ class Summary extends React.Component {
     }
 
     SubmissionTag(timesheet){
-        if(!timesheet.isFileApproved){
+        if(timesheet.approvalStatus == "N/A"){
             return "Items due: Proof of Approved TimeSheet"
         }
-        else if(!timesheet.approvalStatus){
+        else if(timesheet.approvalStatus == "Not Approved"){
             return "Approval denied by Admin, please contact your HR manager"
         }
     }
@@ -102,8 +102,14 @@ class Summary extends React.Component {
     CommentTag(timesheet){
         let year = timesheet.weekending.substring(0,4);
         let res = ""
-        let floatingdays = this.props.profile.remainDays.remainingFloadingDays - timesheet.numOfFloatingDays;
-        let vacationdays = this.props.profile.remainDays.remainingVacationDays - timesheet.numOfVacationDays;
+        let floatingdays = ""
+        let vacationdays = ""
+        if( typeof this.props.profile.remainDays != 'undefined'){
+            floatingdays = this.props.profile.remainDays.remainingFloadingDays - timesheet.numOfFloatingDays;
+            vacationdays = this.props.profile.remainDays.remainingVacationDays - timesheet.numOfVacationDays;
+        }
+        
+        
         if(timesheet.numOfFloatingDays > 0){
             res+= "Total floating days left in " + year + " : " + floatingdays + " days"
     
@@ -143,10 +149,10 @@ class Summary extends React.Component {
                                 <td>{timesheet.totalBillingHour} </td>
                                 <td>{timesheet.submissionStatus}&nbsp;&nbsp;&nbsp;
                                 {
-                                    (timesheet.submissionStatus == "Not Started" || (timesheet.approvalStatus == "Approved" && timesheet.isFileApproved ))? null:
+                                    (timesheet.submissionStatus == "Incomplete" && timesheet.approvalStatus != "Approved")? 
                                     <Tooltip title = {this.SubmissionTag(timesheet)} arrow>
                                     <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
-                                    </Tooltip>
+                                    </Tooltip>:null
                                 }
                                    
                                     </td>
