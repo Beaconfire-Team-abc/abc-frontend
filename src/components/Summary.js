@@ -29,7 +29,7 @@ class Summary extends React.Component {
     componentDidMount() {
         console.log(this.props.userId)
         this.props.fetchAllTimesheets(this.props.userId);
-        this.props.fetchProfile();
+        this.props.fetchProfile(this.props.userId);
     }
 
     optioncondition(status){
