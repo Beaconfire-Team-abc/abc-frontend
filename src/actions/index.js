@@ -2,13 +2,13 @@ import JsonPlaceHolder from "../apis/JsonPlaceHolder";
 
 // todo: change the url later
 export const fetchAllTimesheets = () => async dispatch => {
-    const response = await JsonPlaceHolder.get('/hr/profile/');
-    if (response.data.serviceStatus.success) {
-        dispatch({
-            type: 'FECTH_ALL_TIMESHEETS',
-            payload: response.data.profileSummaryRequests 
-        }); 
-    }
+    const response = await JsonPlaceHolder.get('/timesheet/1');
+    
+    dispatch({
+        type: 'FECTH_ALL_TIMESHEETS',
+        payload: response.data 
+    }); 
+    
 };
 
 // todo: change the url later
