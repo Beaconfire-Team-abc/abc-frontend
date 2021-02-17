@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import TimesheetBoard from './TimesheetBoard';
-
 import "react-datepicker/dist/react-datepicker.css";
+import { Container } from "react-bootstrap";
 
 function Timesheet (props) {
     const [startDate, setStartDate] = useState(new Date());
@@ -29,8 +29,10 @@ function Timesheet (props) {
     
     return (
         <div>
-            <div>Week Ending:  <DatePicker selected={startDate} onChange={date => setStartDate(date)} /></div>
-            <TimesheetBoard weekending={formatDate(startDate)}/>
+            <Container>
+                <div>Week Ending:  <DatePicker selected={startDate} onChange={date => setStartDate(date)} /></div>
+                <TimesheetBoard weekending={formatDate(startDate)} userId={props.userId}/>
+            </Container>
         </div>
     );
 }

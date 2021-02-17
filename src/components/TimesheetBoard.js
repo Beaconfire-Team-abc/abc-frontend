@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React from 'react';
-import Table from 'react-bootstrap/Table'
+import Table from 'react-bootstrap/Table';
+import { Tooltip } from '@material-ui/core';
 
 export default class TimesheetBoard extends React.Component {
     constructor() {
@@ -10,15 +11,13 @@ export default class TimesheetBoard extends React.Component {
 
     componentDidMount() {
         if (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06') {
-            console.log("loading data");
             this.loadData();
         }
     }
 
     loadData() {
-        axios.get('/api/timesheet/1/weekending?weekending='+this.props.weekending)
+        axios.get('/api/employee/timesheet/' + this.props.userId +'/weekending?weekend='+this.props.weekending)
             .then(response => {
-                console.log(response.data)
                 this.setState({
                     timesheet: response.data
                 });
@@ -29,10 +28,11 @@ export default class TimesheetBoard extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        // If it's a new weekending, load data again
+        ///If it's a new weekending, load data again
         if (this.props.weekending !== prevProps.weekending && (this.props.weekending === '2021-02-13' || this.props.weekending === '2021-02-06')){
             this.loadData();
         }
+        
       }
 
     handleStartTimeChange(event, idx) {
@@ -68,6 +68,9 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isFloatingDay = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
             timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfFloatingDays = timesheet.numOfFloatingDays + (value? 1: -1);
             return { timesheet };                                 
@@ -81,6 +84,9 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isVacationDay = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
             timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfVacationDays = timesheet.numOfVacationDays + (value? 1: -1);
             return { timesheet };                                 
@@ -94,6 +100,9 @@ export default class TimesheetBoard extends React.Component {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isHoliday = value; 
+            timesheet.days[idx].endTime = "N/A";
+            timesheet.days[idx].startTime = "N/A";
+            timesheet.days[idx].totalHours = "0";
             timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfHolidays = timesheet.numOfHolidays + (value? 1: -1);
             return { timesheet };                                 
@@ -130,7 +139,7 @@ export default class TimesheetBoard extends React.Component {
               })
         }
         event.preventDefault();
-        axios.post('/api/timesheet/save', this.state.timesheet)
+        axios.post('/api/employee/timesheet/save', this.state.timesheet)
           .then(res => {
             console.log(res);
           })
@@ -138,23 +147,24 @@ export default class TimesheetBoard extends React.Component {
 
     onClickSetDefault = event => {
         event.preventDefault();
-        axios.post('/api/timesheet/default/save', this.state.timesheet)
+        axios.post('/api/employee/timesheet/defaulttimesheet/save', this.state.timesheet)
         .then(res => {
         console.log(res);
         });
-        alert("set to default");
+        alert("Set To Default");
     }
 
     
 
     render() {
-        var ReactS3Uploader = require('react-s3-uploader');
+   
         
         const hoursOptions = [];
         for(let i = 0; i < 25; i++){
             hoursOptions.push(<option key = {i} value={i}>{i}</option>)
         }
         const timeOptions = [];
+        timeOptions.push(<option key = 'N/A' value= 'N/A' >N/A</option>)
         for(let j = 0; j < 12; j++){
             const time = j + ":00 AM.";
             timeOptions.push(<option key={time} value= {time} >{time}</option>)
@@ -175,6 +185,9 @@ export default class TimesheetBoard extends React.Component {
                             <strong className="col-sm">Total Billing Hours: {this.state.timesheet.totalBillingHour}</strong>
                             <strong className="col-sm">Total Compensated Hours: {this.state.timesheet.totalCompensatedHour}</strong>
                             <input type="submit" value="Set Default" onClick={this.onClickSetDefault}/>
+                            <Tooltip title = "Save daily hours as default; future weekly timesheet will show same hours." arrow>
+                                    <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {30}/>
+                            </Tooltip>
                         </div>
                         <Table striped bordered hover size="sm">
                             <thead>
@@ -234,13 +247,22 @@ export default class TimesheetBoard extends React.Component {
                             </tbody>
                         </Table>
 
-                        <select id="submissionStatus">
-                            <option value="Approved Timesheet">Approved Timesheet</option>
-                            <option value="UnApproved Timesheet">UnApproved Timesheet</option>
-                        </select>
-                        <br />
+                        <div className="row">
+                            <div className="col-sm">
+                                <select  id="submissionStatus">
+                                    <option value="Approved Timesheet">Approved Timesheet</option>
+                                    <option value="UnApproved Timesheet">UnApproved Timesheet</option>
+                                </select>
+                            </div>
+                            <div className="col-sm">
+                                <input type="submit" value="Save" onClick={this.handleSubmit}/>
+                            </div>
+                            
 
-                        <input type="submit" value="Save" onClick={this.handleSubmit}/>
+                            
+                        </div>
+
+                       
                         </form>
                     </div>
                     : null

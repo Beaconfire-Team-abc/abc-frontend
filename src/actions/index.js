@@ -12,8 +12,8 @@ export const fetchAllTimesheets = () => async dispatch => {
 };
 
 // todo: change the url later
-export const fetchProfile = () => async dispatch => {
-    const response = await JsonPlaceHolder.get('/profile/1');
+export const fetchProfile = (userId) => async dispatch => {
+    const response = await JsonPlaceHolder.get('/profile/'+userId);
     if (response.data.serviceStatus.success) {
         dispatch({
             type: 'FECTH_PROFILE',
@@ -23,7 +23,7 @@ export const fetchProfile = () => async dispatch => {
 };
 
 // todo: change the url later
-export const postProfile = profile => async dispatch => {
+export const postProfile = (profile, userId) => async dispatch => {
 
     const body = {
         name: profile.name,
@@ -33,7 +33,7 @@ export const postProfile = profile => async dispatch => {
         emergencyContacts: [{emergencyContact: true, name: profile.contact1Name, phone: profile.contact1Phone},{emergencyContact: true, name: profile.contact2Name, phone: profile.contact2Phone}]
     }
     const headers = {'Content-Type': 'application/json'};
-    await JsonPlaceHolder.post('/profile/update-person/1', body, {headers: headers})
+    await JsonPlaceHolder.post('/profile/update-person/' + userId, body, {headers: headers})
 
 };
 

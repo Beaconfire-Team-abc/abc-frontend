@@ -2,6 +2,7 @@ import React from 'react';
 import ProfileForm from './ProfileForm';
 import { connect } from 'react-redux';
 import { fetchProfile } from '../actions/index'
+import { Container } from 'react-bootstrap';
 
 
 class Profile extends React.Component {
@@ -14,20 +15,27 @@ class Profile extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchProfile();
+        this.props.fetchProfile(this.props.userId);
         this.finishLoading();
     }
 
     render() {
-
-        const profileContext = <div><ProfileForm profile={this.props.profile}/> </div>;
-        const isLoadingMessage = (<div className="d-flex align-items-center">
-                                    <strong>Loading...</strong>
-                                    <div className="spinner-border ml-auto" role="status" aria-hidden="true"></div>
-                                  </div>);
-        
-        return this.props.isLoading? isLoadingMessage : profileContext;
-
+        return (
+            <div>
+                <Container>
+                    <div>
+                        {
+                            this.props.isLoading?
+                            <div className="d-flex align-items-center">
+                                <strong>Loading...</strong>
+                                <div className="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+                            </div>
+                            :<div><ProfileForm profile={this.props.profile} userId={this.props.userId}/> </div>
+                        }
+                    </div>
+                </Container>
+            </div>
+        );
     }
 
 }
