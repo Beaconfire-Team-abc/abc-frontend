@@ -21,7 +21,7 @@ class Summary extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          range: 1
+          range: 5
         };
         this.ShowMore = this.ShowMore.bind(this)
       }
@@ -92,7 +92,7 @@ class Summary extends React.Component {
     ShowMore(){
         this.setState((state) => {
             // Important: read `state` instead of `this.state` when updating.
-            return {range: state.range + 1}
+            return {range: state.range + 5}
           });
     }
 
