@@ -44,7 +44,6 @@ export default class TimesheetBoard extends React.Component {
         if(this.state.remainDays.remainingVacationDays < 0 ){
             alert("No Remaining Vacation Days")
         }
-    
         this.setState(prevState => {
             let remainDays = Object.assign({}, prevState.remainDays);
             remainDays.remainingVacationDays = (isSelect)? remainDays.remainingVacationDays - 1 : remainDays.remainingVacationDays + 1;

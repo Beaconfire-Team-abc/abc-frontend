@@ -31,6 +31,7 @@ function ProfileForm({profile, postProfile, userId}) {
         validationSchema: schema,
         onSubmit: (values) => {
             postProfile(values, userId);
+            alert("Profile Saved");
         }
     });
 

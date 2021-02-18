@@ -30,7 +30,6 @@ function App() {
     } else {
       setisAutheticated(false);
     }
-    console.log("loggedInUser:" + isAutheticated)
   }
 
   useEffect(checkAuthetication, [])
@@ -47,7 +46,6 @@ function App() {
   function getUserId() {
     axios.get('/api2/auth/userid')
         .then(response => {
-          console.log(response.data);
           setUserId(response.data);
         })
         .catch((error) => {
@@ -90,6 +88,7 @@ function App() {
 
       <Switch>
         <Route exact path='/' render={(props) => <Home {...props} isAuthed={isAutheticated} />} />
+        <GuardedRoute path = "/timesheet/:weekending" component = {() => <Timesheet userId ={userId} />} auth ={isAutheticated}></GuardedRoute>
         <GuardedRoute exact path='/summary' component={() => <Summary userId={userId} />} auth ={isAutheticated} />
         <GuardedRoute path='/timesheet' component={() => <Timesheet userId={userId} />} auth ={isAutheticated} />
         <GuardedRoute path='/profile' component={() => <Profile userId={userId} />} auth ={isAutheticated} />
