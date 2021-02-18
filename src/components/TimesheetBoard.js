@@ -203,7 +203,7 @@ export default class TimesheetBoard extends React.Component {
                                 <th>Total Hours</th>
                                 <th>Floating Day</th>
                                 <th>Holiday</th>
-                                <th>Vocation</th>
+                                <th>Vacation</th>
                                 </tr>
                             </thead>
                             <tbody>
