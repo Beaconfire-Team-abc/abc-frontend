@@ -22,7 +22,7 @@ import {
   const BlueOnGreenTooltip = withStyles({
     tooltip: {
       fontSize: 15,
-      backgroundColor: "darkblue"
+      backgroundColor: "darkgreen"
     }
   })(Tooltip);
 
@@ -198,7 +198,7 @@ class Summary extends React.Component {
             <div>
                 <Container>
                     {this.renderTimesheetList()}
-                    <Button variant="info" onClick = {this.ShowMore}>Show More</Button>
+                    <Button variant="info" onClick = {this.ShowMore} center>Show More</Button>
                 </Container>
             </div>);
     }
