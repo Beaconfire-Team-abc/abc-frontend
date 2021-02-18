@@ -80,8 +80,10 @@ function App() {
             </Nav.Item>
           </Nav>
           <Form inline>
-            <Button variant="outline-success" onClick={login}>Login</Button>
-            <Button variant="outline-dark" onClick={logout}>Logout</Button>
+          {userId == 0? <Button variant="outline-success" onClick={login}>Login</Button>:
+          <Button variant="outline-dark" onClick={logout}>Logout</Button>}
+            
+            
           </Form>
         </Navbar>
       </div>
