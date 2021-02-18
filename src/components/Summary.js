@@ -164,9 +164,9 @@ class Summary extends React.Component {
                                 <td>{timesheet.submissionStatus}&nbsp;&nbsp;&nbsp;
                                 {
                                     (timesheet.submissionStatus == "Incomplete" && timesheet.approvalStatus != "Approved")? 
-                                    <Tooltip title = {this.SubmissionTag(timesheet)} arrow>
+                                    <BlueOnGreenTooltip title = {this.SubmissionTag(timesheet)} arrow>
                                     <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
-                                    </Tooltip>:null
+                                    </BlueOnGreenTooltip>:null
                                 }
                                    
                                     </td>
@@ -194,6 +194,7 @@ class Summary extends React.Component {
     }
 
     render() {
+        
         return (
             <div>
                 <Container align ="center">

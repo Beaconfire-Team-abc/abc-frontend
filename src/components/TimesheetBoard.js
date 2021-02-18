@@ -2,6 +2,18 @@ import axios from 'axios';
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import { Tooltip } from '@material-ui/core';
+import {
+    createMuiTheme,
+    MuiThemeProvider,
+    withStyles
+  } from "@material-ui/core/styles";
+
+const BlueOnGreenTooltip = withStyles({
+    tooltip: {
+      fontSize: 15,
+      backgroundColor: "darkgreen"
+    }
+  })(Tooltip);
 
 export default class TimesheetBoard extends React.Component {
     constructor() {
@@ -212,10 +224,10 @@ export default class TimesheetBoard extends React.Component {
                             <strong className="col-sm">Weekending Day: {this.state.timesheet.weekending}</strong>
                             <strong className="col-sm">Total Billing Hours: {this.state.timesheet.totalBillingHour}</strong>
                             <strong className="col-sm">Total Compensated Hours: {this.state.timesheet.totalCompensatedHour}</strong>
-                            <input type="submit" value="Set Default" onClick={this.onClickSetDefault}/>
-                            <Tooltip title = "Save daily hours as default; future weekly timesheet will show same hours." arrow>
-                                    <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {30}/>
-                            </Tooltip>
+                            <input type="submit" value="Set Default" onClick={this.onClickSetDefault}/>&nbsp;
+                            <BlueOnGreenTooltip title = "Save daily hours as default; future weekly timesheet will show same hours." arrow>
+                                    <img src = {window.location.origin + '/tag.jpg'} width = {20} height = {20}/>
+                            </BlueOnGreenTooltip>
                         </div>
                         <Table striped bordered hover size="sm">
                             <thead>
