@@ -13,7 +13,18 @@ import {
     Route,
     Link
   } from "react-router-dom";
+  import {
+    createMuiTheme,
+    MuiThemeProvider,
+    withStyles
+  } from "@material-ui/core/styles";
 
+  const BlueOnGreenTooltip = withStyles({
+    tooltip: {
+      fontSize: 15,
+      backgroundColor: "darkblue"
+    }
+  })(Tooltip);
 
 class Summary extends React.Component {
     
@@ -127,6 +138,7 @@ class Summary extends React.Component {
 
     }
 
+    
     renderTimesheetList() {
         
         return (
@@ -165,9 +177,9 @@ class Summary extends React.Component {
                                 <td>{this.commentcondition(timesheet.numOfFloatingDays, timesheet.numOfVacationDays, timesheet.numOfHolidays)}
                                 &nbsp;&nbsp;&nbsp;{
                                     (timesheet.numOfFloatingDays > 0 || timesheet.numOfVacationDays > 0)? 
-                                    <Tooltip title = {this.CommentTag(timesheet)} arrow>
+                                    <BlueOnGreenTooltip title = {this.CommentTag(timesheet)} arrow >
                                     <img src = {process.env.PUBLIC_URL + 'tag.jpg'} width = {20} height = {20}/>
-                                    </Tooltip>: null
+                                    </BlueOnGreenTooltip>: null
                                 }
                 
                                 </td>
