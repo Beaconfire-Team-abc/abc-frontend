@@ -118,8 +118,8 @@ class Summary extends React.Component {
         let floatingdays = ""
         let vacationdays = ""
         if( typeof this.props.profile.remainDays != 'undefined'){
-            floatingdays = this.props.profile.remainDays.remainingFloadingDays - timesheet.numOfFloatingDays;
-            vacationdays = this.props.profile.remainDays.remainingVacationDays - timesheet.numOfVacationDays;
+            floatingdays = this.props.profile.remainDays.remainingFloadingDays;
+            vacationdays = this.props.profile.remainDays.remainingVacationDays;
         }
         
         

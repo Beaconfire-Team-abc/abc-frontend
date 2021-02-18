@@ -6,11 +6,11 @@ import { Tooltip } from '@material-ui/core';
 export default class TimesheetBoard extends React.Component {
     constructor() {
         super();
-        this.state = {timesheet: ''};
+        this.state = {timesheet: '', remainDays: ''};
     }
 
     componentDidMount() {
-        console.log(this.props.weekendingParam);
+        // console.log(this.props.weekendingParam);
         if (typeof this.props.weekendingParam !== 'undefined') {
             this.loadData(this.props.weekendingParam);
         } else {
@@ -23,6 +23,16 @@ export default class TimesheetBoard extends React.Component {
             .then(response => {
                 this.setState({
                     timesheet: response.data
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        axios.get('/api/profile/'+ this.props.userId)
+            .then(response => {
+                // console.log(response.data);
+                this.setState({
+                    remainDays: response.data.person.remainDays
                 });
             })
             .catch((error) => {
@@ -56,9 +66,9 @@ export default class TimesheetBoard extends React.Component {
     handleTotalHoursChange(event, idx) {
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet); 
-            timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.totalBillingHour, timesheet.days[idx].totalHours, event.target.value); 
-            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
-            timesheet.days[idx].totalHours = event.target.value;   
+            timesheet.days[idx].totalHours = event.target.value; 
+            timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.days); 
+            timesheet.totalCompensatedHour = this.computeTotalCompensatedHours(timesheet.totalBillingHour, timesheet.days);  
             return { timesheet };  
           })
     }
@@ -66,32 +76,44 @@ export default class TimesheetBoard extends React.Component {
     handleIsFloatingDayChange(event, idx) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
-
+        if (value && this.state.remainDays.remainingFloadingDays == 0) {
+            alert("You used up all floating days");
+            return;
+        }
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
+            let remainDays = Object.assign({}, prevState.remainDays);  
             timesheet.days[idx].isFloatingDay = value; 
             timesheet.days[idx].endTime = "N/A";
             timesheet.days[idx].startTime = "N/A";
             timesheet.days[idx].totalHours = "0";
-            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
+            timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.days);
+            timesheet.totalCompensatedHour = this.computeTotalCompensatedHours(timesheet.totalBillingHour, timesheet.days);
             timesheet.numOfFloatingDays = timesheet.numOfFloatingDays + (value? 1: -1);
-            return { timesheet };                                 
+            remainDays.remainingFloadingDays = remainDays.remainingFloadingDays + (value? -1: 1);
+            return { timesheet: timesheet, remainDays: remainDays };                                 
           })
     }
 
     handleisVacationDayChange(event, idx) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
-
+        if (value && this.state.remainDays.remainingVacationDays == 0) {
+            alert("You used up all vacation days");
+            return;
+        }
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
+            let remainDays = Object.assign({}, prevState.remainDays);  
             timesheet.days[idx].isVacationDay = value; 
             timesheet.days[idx].endTime = "N/A";
             timesheet.days[idx].startTime = "N/A";
             timesheet.days[idx].totalHours = "0";
-            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
+            timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.days);
+            timesheet.totalCompensatedHour = this.computeTotalCompensatedHours(timesheet.totalBillingHour, timesheet.days);
             timesheet.numOfVacationDays = timesheet.numOfVacationDays + (value? 1: -1);
-            return { timesheet };                                 
+            remainDays.remainingVacationDays = remainDays.remainingVacationDays + (value? -1: 1);
+            return { timesheet: timesheet, remainDays: remainDays };                                 
           })
     }
 
@@ -105,18 +127,32 @@ export default class TimesheetBoard extends React.Component {
             timesheet.days[idx].endTime = "N/A";
             timesheet.days[idx].startTime = "N/A";
             timesheet.days[idx].totalHours = "0";
-            timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
+            timesheet.totalBillingHour = this.computeTotalBillingHours(timesheet.days);
+            timesheet.totalCompensatedHour = this.computeTotalCompensatedHours(timesheet.totalBillingHour, timesheet.days);
             timesheet.numOfHolidays = timesheet.numOfHolidays + (value? 1: -1);
             return { timesheet };                                 
           })
     }
 
-    computeTotalBillingHours(totalBillingHours, oldHour, newHour) {
-        return parseInt(totalBillingHours) + parseInt(newHour) - parseInt(oldHour);
+    handleSubmissionStatus = event => {
+        var status = event.target.value;
+        this.setState(prevState => {
+            let timesheet = Object.assign({}, prevState.timesheet);  
+            timesheet.submissionStatus = (status === "Approved Timesheet")? "Complete": "Incomplete";
+            return {timesheet} ;                                 
+        });
     }
 
-    computeTotalCompensatedHours(days){
-        var totalCompensatedHour = 0;
+    computeTotalBillingHours(days) {
+        var totalBillingHour = 0;
+        for(let i = 0; i < days.length; i++){
+            totalBillingHour = totalBillingHour + parseInt(days[i].totalHours);
+        }
+        return totalBillingHour;
+    }
+
+    computeTotalCompensatedHours(totalBillingHour, days){
+        var totalCompensatedHour = parseInt(totalBillingHour);
         for(let i = 0; i < days.length; i++){
             if(days[i].isFloatingDay || days[i].isHoliday || days[i].isVacationDay){
                 totalCompensatedHour = totalCompensatedHour + 8;
@@ -126,23 +162,13 @@ export default class TimesheetBoard extends React.Component {
     }
 
     handleSubmit = event => {
-        if(document.getElementById("submissionStatus").value === "Approved Timesheet"){
-            this.setState(prevState => {
-                let timesheet = Object.assign({}, prevState.timesheet);  
-                timesheet.submissionStatus = "Complete";
-                return { timesheet };                                 
-              })
-        }
-        else{
-            this.setState(prevState => {
-                let timesheet = Object.assign({}, prevState.timesheet);  
-                timesheet.submissionStatus = "Incomplete";
-                return { timesheet };                                 
-              })
-        }
-
+        console.log(this.state.timesheet);
         event.preventDefault();
         axios.post('/api/employee/timesheet/save', this.state.timesheet)
+          .then(res => {
+            console.log(res.status);
+          })
+        axios.post('/api/employee/profile/remaindays/update/' + this.props.userId, this.state.remainDays)
           .then(res => {
             console.log(res.status);
           })
@@ -161,8 +187,6 @@ export default class TimesheetBoard extends React.Component {
     
 
     render() {
-   
-        
         const hoursOptions = [];
         for(let i = 0; i < 25; i++){
             hoursOptions.push(<option key = {i} value={i}>{i}</option>)
@@ -253,7 +277,8 @@ export default class TimesheetBoard extends React.Component {
 
                         <div className="row">
                             <div className="col-sm">
-                                <select  id="submissionStatus">
+                                <select  id="submissionStatus" onChange={(e) => this.handleSubmissionStatus(e)}>
+                                    <option value="N/A">N/A</option>
                                     <option value="Approved Timesheet">Approved Timesheet</option>
                                     <option value="UnApproved Timesheet">UnApproved Timesheet</option>
                                 </select>
