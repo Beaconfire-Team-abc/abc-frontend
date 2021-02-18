@@ -198,7 +198,7 @@ class Summary extends React.Component {
             <div>
                 <Container align ="center">
                     {this.renderTimesheetList()}
-                    <Button variant="info" onClick = {this.ShowMore} center>Show More</Button>
+                    <Button variant="info" onClick = {this.ShowMore} >Show More</Button>
                 </Container>
             </div>);
     }
