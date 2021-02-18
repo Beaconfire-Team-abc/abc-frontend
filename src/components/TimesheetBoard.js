@@ -6,7 +6,8 @@ import { Tooltip } from '@material-ui/core';
 export default class TimesheetBoard extends React.Component {
     constructor() {
         super();
-        this.state = {timesheet: ''};
+        this.state = {timesheet: '', remainDays: ''};
+        
     }
 
     componentDidMount() {
@@ -26,7 +27,34 @@ export default class TimesheetBoard extends React.Component {
             .catch((error) => {
                 console.log(error);
             });
+        axios.get('/api/profile/'+ this.props.userId)
+            .then(response => {
+                console.log(response.data);
+                this.setState({
+                    remainDays: response.data.person.remainDays
+                });
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
     }
+    anyRemainVocations(isSelect){
+        console.log("isSeclect " + isSelect + " " + typeof(isSelect))
+        if(this.state.remainDays.remainingVacationDays < 0 ){
+            alert("No Remaining Vacation Days")
+        }
+    
+        this.setState(prevState => {
+            let remainDays = Object.assign({}, prevState.remainDays);
+            remainDays.remainingVacationDays = (isSelect)? remainDays.remainingVacationDays - 1 : remainDays.remainingVacationDays + 1;
+            console.log(this.state.remainDays);
+            return {remainDays}
+        })
+        
+
+    }
+
 
     componentDidUpdate(prevProps) {
         ///If it's a new weekending, load data again
@@ -78,10 +106,26 @@ export default class TimesheetBoard extends React.Component {
           })
     }
 
+    // handleisVacationDayChange(event, idx) {
+    //     const target = event.target;
+    //     const value = target.type === 'checkbox' ? target.checked : target.value;
+        
+    //     this.setState(prevState => {
+    //         let timesheet = Object.assign({}, prevState.timesheet);  
+    //         timesheet.days[idx].isVacationDay = value; 
+    //         timesheet.days[idx].endTime = "N/A";
+    //         timesheet.days[idx].startTime = "N/A";
+    //         timesheet.days[idx].totalHours = "0";
+    //         timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
+    //         timesheet.numOfVacationDays = timesheet.numOfVacationDays + (value? 1: -1);
+    //         return { timesheet };                                 
+    //       })
+    // }
+
     handleisVacationDayChange(event, idx) {
         const target = event.target;
         const value = target.type === 'checkbox' ? target.checked : target.value;
-
+        this.anyRemainVocations(value);
         this.setState(prevState => {
             let timesheet = Object.assign({}, prevState.timesheet);  
             timesheet.days[idx].isVacationDay = value; 
@@ -91,7 +135,10 @@ export default class TimesheetBoard extends React.Component {
             timesheet.totalCompensatedHour = timesheet.totalBillingHour + this.computeTotalCompensatedHours(timesheet.days);
             timesheet.numOfVacationDays = timesheet.numOfVacationDays + (value? 1: -1);
             return { timesheet };                                 
-          })
+            })
+        
+
+        
     }
 
     handleisHolidayChange(event, idx) {
@@ -124,22 +171,27 @@ export default class TimesheetBoard extends React.Component {
         return totalCompensatedHour;
     }
 
-    handleSubmit = event => {
-        if(document.getElementById("submissionStatus").value === "Approved Timesheet"){
+    handleSubmissionStatus = event => {
+        var status = event.target.value;
+        if(status === "Approved Timesheet"){
+            console.log(status);
             this.setState(prevState => {
                 let timesheet = Object.assign({}, prevState.timesheet);  
                 timesheet.submissionStatus = "complete";
-                return { timesheet };                                 
-              })
+                return {timesheet} ;                                 
+              });
         }
         else{
             this.setState(prevState => {
                 let timesheet = Object.assign({}, prevState.timesheet);  
                 timesheet.submissionStatus = "incomplete";
-                return { timesheet };                                 
-              })
+                return  {timesheet} ;                                 
+              });
+            
         }
+    }
 
+    handleSubmit = event => {
         event.preventDefault();
         axios.post('/api/employee/timesheet/save', this.state.timesheet)
           .then(res => {
@@ -241,7 +293,8 @@ export default class TimesheetBoard extends React.Component {
                                             <input
                                                 type="checkbox"
                                                 checked={day.isVacationDay}
-                                                onChange={(e) => this.handleisVacationDayChange(e, idx)} />
+                                                onChange={(e) => this.handleisVacationDayChange(e, idx)}
+                                                />                                              
                                         </td>
                                         </tr>
                                     ]);
@@ -251,10 +304,11 @@ export default class TimesheetBoard extends React.Component {
 
                         <div className="row">
                             <div className="col-sm">
-                                <select  id="submissionStatus">
+                             <select id="submissionStatus" onChange={(e) => this.handleSubmissionStatus(e)}>
+                                    <option value="N/A">N/A</option>
                                     <option value="Approved Timesheet">Approved Timesheet</option>
                                     <option value="UnApproved Timesheet">UnApproved Timesheet</option>
-                                </select>
+                             </select> 
                             </div>
                             <div className="col-sm">
                                 <input type="submit" value="Save" onClick={this.handleSubmit}/>
@@ -262,7 +316,7 @@ export default class TimesheetBoard extends React.Component {
                         </div>
 
                        
-                        </form>
+                     </form>
                     </div>
                     : null
                 }
